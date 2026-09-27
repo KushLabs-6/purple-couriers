@@ -39,7 +39,7 @@
             <tr>
               <th>Package ID</th>
               <th>Customer</th>
-              <th>Store</th>
+              <th>Store / Order #</th>
               <th>Tracking</th>
               <th>Status</th>
               <th>Received</th>
@@ -83,7 +83,10 @@
         tr.innerHTML = `
           <td>${pkg.id}</td>
           <td>${pkg.customer}</td>
-          <td>${pkg.store}</td>
+          <td>
+            <strong>${pkg.store}</strong>
+            ${pkg.order ? `<br><span style="font-size: 0.85rem; color: var(--text-muted);">Ord: ${pkg.order}</span>` : ''}
+          </td>
           <td>
             ${pkg.tracking}
             ${pkg.receiptUrl ? `<br><a href="${pkg.receiptUrl}" target="_blank" style="font-size: 0.8rem; color: var(--primary);">📄 View Receipt</a>` : ''}

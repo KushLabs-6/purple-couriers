@@ -42,7 +42,8 @@ app.get('/api/track/:query', (req, res) => {
   const query = req.params.query.toLowerCase().trim();
   const found = packages.find(p => 
     p.id.toLowerCase() === query || 
-    p.tracking.toLowerCase() === query
+    p.tracking.toLowerCase() === query ||
+    (p.order && p.order.toLowerCase() === query)
   );
   if (found) {
     res.json(found);
@@ -67,6 +68,7 @@ app.post('/api/packages', upload.single('receiptImage'), (req, res) => {
       id: `PC-00${Math.floor(10000 + Math.random() * 90000)}`,
       customer: req.body.customer || 'Guest User',
       store: req.body.store,
+      order: req.body.order || '',
       tracking: trackNum,
       status: 'Pending Receipt',
       receivedDate: 'Awaiting Dropoff',

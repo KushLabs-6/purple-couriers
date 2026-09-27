@@ -42,6 +42,7 @@
       
       <form id="add-package-form" style="display: flex; flex-direction: column; gap: 1rem;">
         <input type="text" id="storeName" name="store" placeholder="Online Store (e.g. Amazon)" required>
+        <input type="text" id="orderNum" name="order" placeholder="Order Number (e.g. 114-1234567-890)" required>
         
         <div id="tracking-container" style="display: flex; flex-direction: column; gap: 0.5rem;">
           <input type="text" class="tracking-input" placeholder="Store Tracking Number" required>
@@ -83,7 +84,7 @@
               <span class="status-badge" style="background: ${statusColor}22; color: ${statusColor};">${pkg.status}</span>
             </div>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">
-              Tracking: <strong>${pkg.tracking}</strong> &nbsp;|&nbsp; ID: <strong>${pkg.id}</strong>
+              Order: <strong>${pkg.order || 'N/A'}</strong> &nbsp;|&nbsp; Tracking: <strong>${pkg.tracking}</strong> &nbsp;|&nbsp; ID: <strong>${pkg.id}</strong>
             </p>
             <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
               <p><strong>Status Updated:</strong> ${pkg.receivedDate}</p>
@@ -125,6 +126,7 @@
 
       const formData = new FormData();
       formData.append('store', document.getElementById('storeName').value);
+      formData.append('order', document.getElementById('orderNum').value);
       formData.append('tracking', JSON.stringify(trackings));
       formData.append('receiptImage', document.getElementById('receiptImage').files[0]);
 
