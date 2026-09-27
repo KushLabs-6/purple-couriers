@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
   <nav class="navbar">
     <h1>Purple Couriers - Staff Portal</h1>
     <div class="navbar-links">
@@ -22,40 +21,18 @@
         <h2>Today's Overview</h2>
         <p>System package accountability metrics.</p>
       </div>
-      <div>
-        <button class="btn">+ Add / Scan Package</button>
-      </div>
     </div>
 
+    <!-- Simplified stats for prototype -->
     <div class="stats-grid">
-      <div class="stat-box">
-        <div class="stat-number">42</div>
-        <div>Expected</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-number">36</div>
-        <div>Received</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-number">24</div>
-        <div>Ready (Ship)</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-number">18</div>
-        <div>In Transit</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-number">31</div>
-        <div>Arrived (JA)</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-number">12</div>
-        <div>Ready for Pickup</div>
-      </div>
+      <div class="stat-box"><div class="stat-number" id="total-count">0</div><div>Total Packages</div></div>
+      <div class="stat-box"><div class="stat-number" id="received-count">0</div><div>Received</div></div>
+      <div class="stat-box"><div class="stat-number" id="transit-count">0</div><div>In Transit</div></div>
+      <div class="stat-box"><div class="stat-number" id="pickup-count">0</div><div>Ready for Pickup</div></div>
     </div>
 
     <div class="card">
-      <h3>Recent Packages</h3>
+      <h3>All Packages</h3>
       <div style="overflow-x: auto;">
         <table>
           <thead>
@@ -69,40 +46,69 @@
               <th>Action</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>PC-0045821</td>
-              <td>John Brown</td>
-              <td>Amazon</td>
-              <td>123456</td>
-              <td><span class="status-badge">Received</span></td>
-              <td>Sept 27</td>
-              <td><button class="btn" style="padding: 0.2rem 0.5rem; font-size: 0.8rem;">Update</button></td>
-            </tr>
-            <tr>
-              <td>PC-0045822</td>
-              <td>Sarah Williams</td>
-              <td>Shein</td>
-              <td>456789</td>
-              <td><span class="status-badge">Received</span></td>
-              <td>Sept 27</td>
-              <td><button class="btn" style="padding: 0.2rem 0.5rem; font-size: 0.8rem;">Update</button></td>
-            </tr>
-            <tr>
-              <td>PC-0045800</td>
-              <td>Kevin Smith</td>
-              <td>eBay</td>
-              <td>789123</td>
-              <td><span class="status-badge" style="background-color: #dbeafe; color: #1e3a8a;">Shipping</span></td>
-              <td>Sept 26</td>
-              <td><button class="btn" style="padding: 0.2rem 0.5rem; font-size: 0.8rem;">Update</button></td>
-            </tr>
+          <tbody id="staff-table-body">
+            <tr><td colspan="7">Loading data...</td></tr>
           </tbody>
         </table>
       </div>
     </div>
-
   </div>
 
+  <script>
+    // 1. Fetch data from the "Brain"
+    async function loadStaffPackages() {
+      const response = await fetch('/api/packages');
+      const packages = await response.json();
+      
+      const tbody = document.getElementById('staff-table-body');
+      tbody.innerHTML = '';
+      
+      // Update basic stats
+      document.getElementById('total-count').innerText = packages.length;
+      document.getElementById('received-count').innerText = packages.filter(p => p.status === 'Received').length;
+      document.getElementById('transit-count').innerText = packages.filter(p => p.status === 'In Transit').length;
+      document.getElementById('pickup-count').innerText = packages.filter(p => p.status === 'Ready for Pickup').length;
+
+      // The status journey options
+      const statuses = ['Pending Receipt', 'Received', 'Shipping', 'In Transit', 'Arrived in Jamaica', 'Ready for Pickup', 'Delivered'];
+
+      packages.forEach(pkg => {
+        const tr = document.createElement('tr');
+        
+        // Build the dropdown for updating status
+        let statusOptions = statuses.map(s => 
+          `<option value="${s}" ${pkg.status === s ? 'selected' : ''}>${s}</option>`
+        ).join('');
+
+        tr.innerHTML = `
+          <td>${pkg.id}</td>
+          <td>${pkg.customer}</td>
+          <td>${pkg.store}</td>
+          <td>${pkg.tracking}</td>
+          <td><span class="status-badge" style="background-color: #f3f4f6; color: var(--primary);">${pkg.status}</span></td>
+          <td>${pkg.receivedDate}</td>
+          <td>
+            <select onchange="updateStatus('${pkg.id}', this.value)" style="padding: 0.3rem; border-radius: 4px; border: 1px solid #ccc;">
+              ${statusOptions}
+            </select>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // 2. Send status update to the Brain
+    async function updateStatus(packageId, newStatus) {
+      await fetch(`/api/packages/${packageId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      loadStaffPackages(); // Reload table after update
+    }
+
+    // Run on startup
+    loadStaffPackages();
+  </script>
 </body>
 </html>
