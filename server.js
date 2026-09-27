@@ -12,7 +12,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // THE "BRAIN" (In-Memory Database Prototype)
 // ==========================================
 let packages = [
-  { id: 'PC-0045821', customer: 'John Brown', store: 'Amazon', tracking: '1Z123456', status: 'Received', receivedDate: 'Sept 27', step: 'Preparing for shipment' },
+  { id: 'PC-0045821', customer: 'John Brown', store: 'Amazon', tracking: '1Z123456', status: 'Received', receivedDate: 'Sept 27', step: 'Received from Amazon. Preparing for shipment.' },
   { id: 'PC-0045822', customer: 'Sarah Williams', store: 'Shein', tracking: 'SH123456', status: 'In Transit', receivedDate: 'Sept 27', step: 'Arriving in Jamaica soon' },
   { id: 'PC-0045800', customer: 'Kevin Smith', store: 'eBay', tracking: '789123', status: 'Ready for Pickup', receivedDate: 'Sept 26', step: 'Ready at Kingston Branch' }
 ];
@@ -49,7 +49,7 @@ app.put('/api/packages/:id/status', (req, res) => {
   if (pkg) {
     pkg.status = newStatus;
     // Auto-update the "next step" description based on status
-    if(newStatus === 'Received') pkg.step = 'Preparing for shipment';
+    if(newStatus === 'Received') pkg.step = `Received from ${pkg.store}. Preparing for shipment.`;
     if(newStatus === 'Shipping') pkg.step = 'Leaving facility';
     if(newStatus === 'In Transit') pkg.step = 'Arriving in Jamaica soon';
     if(newStatus === 'Arrived in Jamaica') pkg.step = 'Processing at customs';
