@@ -42,7 +42,11 @@
       
       <form id="add-package-form" style="display: flex; flex-direction: column; gap: 1rem;">
         <input type="text" id="storeName" name="store" placeholder="Online Store (e.g. Amazon)" required>
-        <input type="text" id="trackingNum" name="tracking" placeholder="Store Tracking Number" required>
+        
+        <div id="tracking-container" style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <input type="text" class="tracking-input" placeholder="Store Tracking Number" required>
+        </div>
+        <button type="button" id="add-tracking-btn" style="background: none; border: none; color: var(--primary); font-weight: 600; cursor: pointer; text-align: left; padding: 0.5rem 0; font-size: 0.9rem;">+ Add another tracking number</button>
         
         <div style="background: white; padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color);">
           <label style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem;">Upload Receipt Image</label>
@@ -97,16 +101,31 @@
       }
     });
 
-    // 2. Handle Receipt Upload
+    // 2. Handle Add Another Tracking Number button
+    document.getElementById('add-tracking-btn').addEventListener('click', () => {
+      const container = document.getElementById('tracking-container');
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'tracking-input';
+      input.placeholder = 'Store Tracking Number';
+      input.required = true;
+      container.appendChild(input);
+    });
+
+    // 3. Handle Receipt Upload
     document.getElementById('add-package-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('submitBtn');
       btn.innerText = "Uploading...";
       btn.disabled = true;
 
+      // Gather all tracking numbers
+      const trackingInputs = document.querySelectorAll('.tracking-input');
+      const trackings = Array.from(trackingInputs).map(input => input.value.trim()).filter(val => val !== '');
+
       const formData = new FormData();
       formData.append('store', document.getElementById('storeName').value);
-      formData.append('tracking', document.getElementById('trackingNum').value);
+      formData.append('tracking', JSON.stringify(trackings));
       formData.append('receiptImage', document.getElementById('receiptImage').files[0]);
 
       try {
@@ -116,9 +135,13 @@
         });
         
         if(res.ok) {
-          const newPkg = await res.json();
-          alert(`Success! Your Package ID is ${newPkg.id}. You can use this or your tracking number to check the status above.`);
+          const newPackages = await res.json();
+          const ids = newPackages.map(p => p.id).join(', ');
+          alert(`Success! We created ${newPackages.length} package(s). Your Package IDs are: ${ids}. You can use these or your tracking numbers to check the status above.`);
           document.getElementById('add-package-form').reset();
+          
+          // Reset tracking container to just 1 input
+          document.getElementById('tracking-container').innerHTML = '<input type="text" class="tracking-input" placeholder="Store Tracking Number" required>';
         } else {
           alert('Error uploading receipt. Ensure it is an image under 5MB.');
         }

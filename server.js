@@ -51,20 +51,33 @@ app.get('/api/track/:query', (req, res) => {
   }
 });
 
-// 3. Add a new package WITH receipt image (Customer submitting receipt)
+// 3. Add new packages WITH receipt image (Customer submitting receipt)
 app.post('/api/packages', upload.single('receiptImage'), (req, res) => {
-  const newPackage = {
-    id: `PC-00${Math.floor(10000 + Math.random() * 90000)}`,
-    customer: req.body.customer || 'Guest User',
-    store: req.body.store,
-    tracking: req.body.tracking,
-    status: 'Pending Receipt',
-    receivedDate: 'Awaiting Dropoff',
-    step: 'Waiting for courier confirmation',
-    receiptUrl: req.file ? `/uploads/${req.file.filename}` : null
-  };
-  packages.unshift(newPackage);
-  res.json(newPackage);
+  let trackingNumbers = [];
+  try {
+    trackingNumbers = JSON.parse(req.body.tracking);
+  } catch(e) {
+    trackingNumbers = [req.body.tracking]; // Fallback just in case
+  }
+
+  const createdPackages = [];
+
+  trackingNumbers.forEach(trackNum => {
+    const newPackage = {
+      id: `PC-00${Math.floor(10000 + Math.random() * 90000)}`,
+      customer: req.body.customer || 'Guest User',
+      store: req.body.store,
+      tracking: trackNum,
+      status: 'Pending Receipt',
+      receivedDate: 'Awaiting Dropoff',
+      step: 'Waiting for courier confirmation',
+      receiptUrl: req.file ? `/uploads/${req.file.filename}` : null
+    };
+    packages.unshift(newPackage);
+    createdPackages.push(newPackage);
+  });
+  
+  res.json(createdPackages);
 });
 
 // 4. Update a package status (Staff updating the journey)
