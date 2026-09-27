@@ -41,8 +41,12 @@
       </p>
       
       <form id="add-package-form" style="display: flex; flex-direction: column; gap: 1rem;">
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <input type="text" id="firstName" name="firstName" placeholder="First Name" required style="flex: 1; min-width: 140px;">
+          <input type="text" id="lastName" name="lastName" placeholder="Last Name" required style="flex: 1; min-width: 140px;">
+        </div>
         <input type="text" id="storeName" name="store" placeholder="Online Store (e.g. Amazon)" required>
-        <input type="text" id="orderNum" name="order" placeholder="Order Number (e.g. 114-1234567-890)" required>
+        <input type="text" id="orderNum" name="order" placeholder="Order Number (Required for Amazon)">
         
         <div id="tracking-container" style="display: flex; flex-direction: column; gap: 0.5rem;">
           <input type="text" class="tracking-input" placeholder="Store Tracking Number" required>
@@ -107,7 +111,18 @@
       }
     });
 
-    // 2. Handle Add Another Tracking Number button
+    // 2. Dynamically require Order Number if store is Amazon
+    document.getElementById('storeName').addEventListener('input', function() {
+      const orderField = document.getElementById('orderNum');
+      const isAmazon = this.value.trim().toLowerCase() === 'amazon';
+      orderField.required = isAmazon;
+      orderField.placeholder = isAmazon
+        ? 'Order Number (Required for Amazon e.g. 114-1234567-890)'
+        : 'Order Number (Optional for this store)';
+      orderField.style.borderColor = isAmazon ? 'var(--primary)' : '';
+    });
+
+    // 3. Handle Add Another Tracking Number button
     document.getElementById('add-tracking-btn').addEventListener('click', () => {
       const container = document.getElementById('tracking-container');
       const input = document.createElement('input');
@@ -118,7 +133,7 @@
       container.appendChild(input);
     });
 
-    // 3. Handle Receipt Upload
+    // 4. Handle Receipt Upload
     document.getElementById('add-package-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('submitBtn');
@@ -130,6 +145,8 @@
       const trackings = Array.from(trackingInputs).map(input => input.value.trim()).filter(val => val !== '');
 
       const formData = new FormData();
+      formData.append('firstName', document.getElementById('firstName').value.trim());
+      formData.append('lastName', document.getElementById('lastName').value.trim());
       formData.append('store', document.getElementById('storeName').value);
       formData.append('order', document.getElementById('orderNum').value);
       formData.append('tracking', JSON.stringify(trackings));

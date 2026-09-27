@@ -73,7 +73,9 @@ app.post('/api/packages', upload.single('receiptImage'), (req, res) => {
   trackingNumbers.forEach(trackNum => {
     const newPackage = {
       id: `PC-00${Math.floor(10000 + Math.random() * 90000)}`,
-      customer: req.body.customer || 'Guest User',
+      customer: `${req.body.firstName || ''} ${req.body.lastName || ''}`.trim() || 'Guest User',
+      firstName: req.body.firstName || '',
+      lastName: req.body.lastName || '',
       store: req.body.store,
       order: req.body.order || '',
       tracking: trackNum,
