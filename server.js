@@ -80,7 +80,8 @@ app.post('/api/packages', upload.single('receiptImage'), (req, res) => {
       status: 'Pending Receipt',
       receivedDate: 'Awaiting Dropoff',
       step: 'Waiting for courier confirmation',
-      receiptUrl: req.file ? `/uploads/${req.file.filename}` : null
+      receiptUrl: req.file ? `/uploads/${req.file.filename}` : null,
+      viaWhatsapp: req.body.viaWhatsapp === 'true'
     };
     packages.unshift(newPackage);
     createdPackages.push(newPackage);

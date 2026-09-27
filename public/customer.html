@@ -50,8 +50,13 @@
         <button type="button" id="add-tracking-btn" style="background: none; border: none; color: var(--primary); font-weight: 600; cursor: pointer; text-align: left; padding: 0.5rem 0; font-size: 0.9rem;">+ Add another tracking number</button>
         
         <div style="background: white; padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color);">
-          <label style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem;">Upload Receipt Image</label>
-          <input type="file" id="receiptImage" name="receiptImage" accept="image/*" required style="border: none; background: transparent; padding: 0;">
+          <label style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem;">Upload Receipt Image (Optional)</label>
+          <input type="file" id="receiptImage" name="receiptImage" accept="image/*" style="border: none; background: transparent; padding: 0;">
+          
+          <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.5rem;">
+            <input type="checkbox" id="viaWhatsapp" style="min-width: auto; width: 1.2rem; height: 1.2rem; cursor: pointer;">
+            <label for="viaWhatsapp" style="font-size: 0.9rem; cursor: pointer; color: var(--text-main);">I already sent my receipt via WhatsApp</label>
+          </div>
         </div>
 
         <button type="submit" class="btn" id="submitBtn" style="margin-top: 0.5rem; padding: 1rem;">+ Upload & Submit Receipt</button>
@@ -128,7 +133,12 @@
       formData.append('store', document.getElementById('storeName').value);
       formData.append('order', document.getElementById('orderNum').value);
       formData.append('tracking', JSON.stringify(trackings));
-      formData.append('receiptImage', document.getElementById('receiptImage').files[0]);
+      formData.append('viaWhatsapp', document.getElementById('viaWhatsapp').checked);
+      
+      const fileInput = document.getElementById('receiptImage');
+      if (fileInput.files.length > 0) {
+        formData.append('receiptImage', fileInput.files[0]);
+      }
 
       try {
         const res = await fetch('/api/packages', {

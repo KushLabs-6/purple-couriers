@@ -80,6 +80,16 @@
           `<option value="${s}" ${pkg.status === s ? 'selected' : ''}>${s}</option>`
         ).join('');
 
+        // Determine receipt display
+        let receiptHtml = '';
+        if (pkg.receiptUrl) {
+          receiptHtml = `<br><a href="${pkg.receiptUrl}" target="_blank" style="font-size: 0.8rem; color: var(--primary);">📄 View Receipt</a>`;
+        } else if (pkg.viaWhatsapp) {
+          receiptHtml = `<br><span style="font-size: 0.8rem; color: #16a34a; font-weight: 600;">💬 Sent via WhatsApp</span>`;
+        } else {
+          receiptHtml = `<br><span style="font-size: 0.8rem; color: var(--text-muted);">No receipt</span>`;
+        }
+
         tr.innerHTML = `
           <td>${pkg.id}</td>
           <td>${pkg.customer}</td>
@@ -89,7 +99,7 @@
           </td>
           <td>
             ${pkg.tracking}
-            ${pkg.receiptUrl ? `<br><a href="${pkg.receiptUrl}" target="_blank" style="font-size: 0.8rem; color: var(--primary);">📄 View Receipt</a>` : ''}
+            ${receiptHtml}
           </td>
           <td><span class="status-badge" style="background-color: #f3f4f6; color: var(--primary);">${pkg.status}</span></td>
           <td>${pkg.receivedDate}</td>
