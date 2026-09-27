@@ -84,11 +84,14 @@
           <td>${pkg.id}</td>
           <td>${pkg.customer}</td>
           <td>${pkg.store}</td>
-          <td>${pkg.tracking}</td>
+          <td>
+            ${pkg.tracking}
+            ${pkg.receiptUrl ? `<br><a href="${pkg.receiptUrl}" target="_blank" style="font-size: 0.8rem; color: var(--primary);">📄 View Receipt</a>` : ''}
+          </td>
           <td><span class="status-badge" style="background-color: #f3f4f6; color: var(--primary);">${pkg.status}</span></td>
           <td>${pkg.receivedDate}</td>
           <td>
-            <select onchange="updateStatus('${pkg.id}', this.value)" style="padding: 0.3rem; border-radius: 4px; border: 1px solid #ccc;">
+            <select onchange="updateStatus('${pkg.id}', this.value)">
               ${statusOptions}
             </select>
           </td>
