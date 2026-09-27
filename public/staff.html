@@ -101,7 +101,7 @@
             ${pkg.tracking}
             ${receiptHtml}
           </td>
-          <td><span class="status-badge" style="background-color: #f3f4f6; color: var(--primary);">${pkg.status}</span></td>
+          <td><span class="status-badge" style="background-color: #f3f4f6; color: var(--primary);">${pkg.status === 'Received' ? `Received from ${pkg.store}` : pkg.status}</span></td>
           <td>${pkg.receivedDate}</td>
           <td>
             <select onchange="updateStatus('${pkg.id}', this.value)">

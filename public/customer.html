@@ -90,7 +90,7 @@
           <div class="card" style="border-left: 4px solid ${statusColor}; animation: fadeIn 0.3s ease;">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
               <h3>${pkg.store} Package</h3>
-              <span class="status-badge" style="background: ${statusColor}22; color: ${statusColor};">${pkg.status}</span>
+              <span class="status-badge" style="background: ${statusColor}22; color: ${statusColor};">${pkg.status === 'Received' ? `Received from ${pkg.store}` : pkg.status}</span>
             </div>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">
               Order: <strong>${pkg.order || 'N/A'}</strong> &nbsp;|&nbsp; Tracking: <strong>${pkg.tracking}</strong> &nbsp;|&nbsp; ID: <strong>${pkg.id}</strong>
