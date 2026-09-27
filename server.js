@@ -1,122 +1,181 @@
 const express = require('express');
 const path = require('path');
+const mongoose = require('mongoose');
+const { v2: cloudinary } = require('cloudinary');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer');
-const fs = require('fs');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Ensure uploads directory exists (Git ignores empty folders)
-const uploadsDir = path.join(__dirname, 'public', 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
+// ==========================================
+// CONNECT TO MONGODB
+// ==========================================
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log('✅ Connected to MongoDB'))
+  .catch(err => console.error('❌ MongoDB connection error:', err));
 
-// Setup Multer for image uploads (limit to 5MB)
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadsDir)
+// ==========================================
+// CONNECT TO CLOUDINARY
+// ==========================================
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Cloudinary storage for multer (images go directly to cloud)
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'purple-couriers/receipts',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf'],
+    transformation: [{ quality: 'auto', fetch_format: 'auto' }],
   },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-    cb(null, uniqueSuffix + '-' + file.originalname.replace(/\s+/g, '-'))
-  }
 });
-const upload = multer({ 
+
+const upload = multer({
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
 });
+
+// ==========================================
+// PACKAGE SCHEMA (MongoDB Model)
+// ==========================================
+const packageSchema = new mongoose.Schema({
+  id: { type: String, unique: true },
+  customer: String,
+  firstName: String,
+  lastName: String,
+  store: String,
+  order: String,
+  tracking: String,
+  status: { type: String, default: 'Pending Receipt' },
+  receivedDate: { type: String, default: 'Awaiting Dropoff' },
+  step: { type: String, default: 'Waiting for courier confirmation' },
+  receiptUrl: { type: String, default: null },
+  viaWhatsapp: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now },
+});
+
+const Package = mongoose.model('Package', packageSchema);
 
 // Middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// THE "BRAIN" (In-Memory Database Prototype)
-let packages = [
-  { id: 'PC-0045821', customer: 'John Brown', store: 'Amazon', tracking: '1Z123456', status: 'Received', receivedDate: 'Sept 27', step: 'Received from Amazon. Preparing for shipment.', receiptUrl: null },
-  { id: 'PC-0045822', customer: 'Sarah Williams', store: 'Shein', tracking: 'SH123456', status: 'In Transit', receivedDate: 'Sept 27', step: 'Arriving in Jamaica soon', receiptUrl: null },
-  { id: 'PC-0045800', customer: 'Kevin Smith', store: 'eBay', tracking: '789123', status: 'Ready for Pickup', receivedDate: 'Sept 26', step: 'Ready at Kingston Branch', receiptUrl: null }
-];
+// ==========================================
+// API ROUTES
+// ==========================================
 
-// --- API ROUTES ---
-
-// 1. Get all packages (For Staff Dashboard)
-app.get('/api/packages', (req, res) => {
-  res.json(packages);
-});
-
-// 2. Track a single package (For Customer Guest Tracking)
-app.get('/api/track/:query', (req, res) => {
-  const query = req.params.query.toLowerCase().trim();
-  const found = packages.find(p => 
-    p.id.toLowerCase() === query || 
-    p.tracking.toLowerCase() === query ||
-    (p.order && p.order.toLowerCase() === query)
-  );
-  if (found) {
-    res.json(found);
-  } else {
-    res.status(404).json({ error: 'Package not found' });
+// 1. Get all packages (Staff Dashboard)
+app.get('/api/packages', async (req, res) => {
+  try {
+    const packages = await Package.find().sort({ createdAt: -1 });
+    res.json(packages);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch packages' });
   }
 });
 
-// 3. Add new packages WITH receipt image (Customer submitting receipt)
-app.post('/api/packages', upload.single('receiptImage'), (req, res) => {
+// 2. Track a single package (Guest Tracking)
+app.get('/api/track/:query', async (req, res) => {
+  const query = req.params.query.toLowerCase().trim();
+  try {
+    const found = await Package.findOne({
+      $or: [
+        { id: { $regex: new RegExp(`^${query}$`, 'i') } },
+        { tracking: { $regex: new RegExp(`^${query}$`, 'i') } },
+        { order: { $regex: new RegExp(`^${query}$`, 'i') } },
+      ]
+    });
+    if (found) {
+      res.json(found);
+    } else {
+      res.status(404).json({ error: 'Package not found' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Search failed' });
+  }
+});
+
+// 3. Add new packages (Customer submitting receipt)
+app.post('/api/packages', upload.single('receiptImage'), async (req, res) => {
   let trackingNumbers = [];
   try {
     trackingNumbers = JSON.parse(req.body.tracking);
-  } catch(e) {
-    trackingNumbers = [req.body.tracking]; // Fallback just in case
+  } catch (e) {
+    trackingNumbers = [req.body.tracking];
   }
 
-  const createdPackages = [];
-
-  trackingNumbers.forEach(trackNum => {
-    const newPackage = {
-      id: `PC-00${Math.floor(10000 + Math.random() * 90000)}`,
-      customer: `${req.body.firstName || ''} ${req.body.lastName || ''}`.trim() || 'Guest User',
-      firstName: req.body.firstName || '',
-      lastName: req.body.lastName || '',
-      store: req.body.store,
-      order: req.body.order || '',
-      tracking: trackNum,
-      status: 'Pending Receipt',
-      receivedDate: 'Awaiting Dropoff',
-      step: 'Waiting for courier confirmation',
-      receiptUrl: req.file ? `/uploads/${req.file.filename}` : null,
-      viaWhatsapp: req.body.viaWhatsapp === 'true'
-    };
-    packages.unshift(newPackage);
-    createdPackages.push(newPackage);
-  });
-  
-  res.json(createdPackages);
-});
-
-// 4. Update a package status (Staff updating the journey)
-app.put('/api/packages/:id/status', (req, res) => {
-  const packageId = req.params.id;
-  const newStatus = req.body.status;
-  
-  const pkg = packages.find(p => p.id === packageId);
-  if (pkg) {
-    pkg.status = newStatus;
-    if(newStatus === 'Received') pkg.step = `Received from ${pkg.store}. Preparing for shipment.`;
-    if(newStatus === 'Shipping') pkg.step = 'Leaving facility';
-    if(newStatus === 'In Transit') pkg.step = 'Arriving in Jamaica soon';
-    if(newStatus === 'Arrived in Jamaica') pkg.step = 'Processing at customs';
-    if(newStatus === 'Ready for Pickup') pkg.step = 'Ready at Kingston Branch';
-    if(newStatus === 'Delivered') pkg.step = 'Completed';
-    
-    if(newStatus === 'Received' && pkg.receivedDate === 'Awaiting Dropoff') {
-       pkg.receivedDate = 'Today';
+  try {
+    const createdPackages = [];
+    for (const trackNum of trackingNumbers) {
+      const newPackage = new Package({
+        id: `PC-00${Math.floor(10000 + Math.random() * 90000)}`,
+        customer: `${req.body.firstName || ''} ${req.body.lastName || ''}`.trim() || 'Guest User',
+        firstName: req.body.firstName || '',
+        lastName: req.body.lastName || '',
+        store: req.body.store,
+        order: req.body.order || '',
+        tracking: trackNum,
+        status: 'Pending Receipt',
+        receivedDate: 'Awaiting Dropoff',
+        step: 'Waiting for courier confirmation',
+        receiptUrl: req.file ? req.file.path : null,
+        viaWhatsapp: req.body.viaWhatsapp === 'true',
+      });
+      await newPackage.save();
+      createdPackages.push(newPackage);
     }
-    res.json(pkg);
-  } else {
-    res.status(404).json({ error: 'Package not found' });
+    res.json(createdPackages);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to save package' });
   }
 });
 
-// Fallback to customer dashboard
+// 4. Update a package status (Staff)
+app.put('/api/packages/:id/status', async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  const stepMap = {
+    'Received':           (store) => `Received from ${store}. Preparing for shipment.`,
+    'Shipping':           () => 'Leaving facility',
+    'In Transit':         () => 'Arriving in Jamaica soon',
+    'Arrived in Jamaica': () => 'Processing at customs',
+    'Ready for Pickup':   () => 'Ready at Kingston Branch',
+    'Delivered':          () => 'Completed',
+  };
+
+  try {
+    const pkg = await Package.findOne({ id });
+    if (!pkg) return res.status(404).json({ error: 'Package not found' });
+
+    pkg.status = status;
+    if (stepMap[status]) pkg.step = stepMap[status](pkg.store);
+    if (status === 'Received' && pkg.receivedDate === 'Awaiting Dropoff') {
+      const today = new Date();
+      pkg.receivedDate = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+    await pkg.save();
+    res.json(pkg);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update status' });
+  }
+});
+
+// 5. DELETE a package (Staff)
+app.delete('/api/packages/:id', async (req, res) => {
+  try {
+    await Package.deleteOne({ id: req.params.id });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete package' });
+  }
+});
+
+// Serve customer page
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'customer.html'));
 });

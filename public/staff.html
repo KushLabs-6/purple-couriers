@@ -103,10 +103,11 @@
           </td>
           <td><span class="status-badge" style="background-color: #f3f4f6; color: var(--primary);">${pkg.status === 'Received' ? `Received from ${pkg.store}` : pkg.status}</span></td>
           <td>${pkg.receivedDate}</td>
-          <td>
+          <td style="display: flex; gap: 0.5rem; align-items: center;">
             <select onchange="updateStatus('${pkg.id}', this.value)">
               ${statusOptions}
             </select>
+            <button onclick="deletePackage('${pkg.id}')" title="Delete Package" style="background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 0.2rem;" >🗑️</button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -121,6 +122,13 @@
         body: JSON.stringify({ status: newStatus })
       });
       loadStaffPackages(); // Reload table after update
+    }
+
+    // 3. Delete a package
+    async function deletePackage(packageId) {
+      if (!confirm(`Are you sure you want to permanently delete package ${packageId}? This cannot be undone.`)) return;
+      await fetch(`/api/packages/${packageId}`, { method: 'DELETE' });
+      loadStaffPackages(); // Reload table
     }
 
     // Run on startup
