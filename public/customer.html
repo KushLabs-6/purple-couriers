@@ -3,146 +3,301 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Customer Tracking - Purple Couriers</title>
+  <title>Purple Couriers — Track & Submit</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* Tab switcher */
+    .tab-bar {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      background: white;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      padding: 0.4rem;
+      max-width: 420px;
+      margin: 0 auto 2.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 0.85rem 1rem;
+      border: none;
+      background: transparent;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--primary-gradient);
+      color: white;
+      box-shadow: 0 4px 12px rgba(126,34,206,0.3);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Track panel */
+    .track-wrap {
+      max-width: 580px;
+      margin: 0 auto;
+    }
+    .track-search {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .track-search input {
+      flex: 1;
+      min-width: 200px;
+      padding: 1rem 1.5rem;
+      border-radius: 99px;
+      font-size: 1rem;
+    }
+    .track-search button {
+      padding: 1rem 2rem;
+      border-radius: 99px;
+    }
+    #search-result { animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Submit panel */
+    .submit-wrap {
+      max-width: 580px;
+      margin: 0 auto;
+    }
+
+    /* Success panel */
+    .success-box {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      border-radius: 16px;
+      padding: 2rem;
+      text-align: center;
+      display: none;
+    }
+    .success-box h3 { color: #16a34a; font-size: 1.3rem; margin-bottom: 0.5rem; }
+    .success-box p { color: #166534; }
+    .id-chip {
+      display: inline-block;
+      background: #dcfce7;
+      color: #166534;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin: 0.75rem 0;
+      letter-spacing: 0.05em;
+    }
+
+    /* Footer */
+    footer { background: #0f172a; color: #64748b; text-align: center; padding: 1.5rem; font-size: 0.82rem; margin-top: 3rem; }
+    footer img { height: 28px; vertical-align: middle; margin-left: 0.5rem; opacity: 0.7; }
+  </style>
 </head>
 <body>
   <nav class="navbar">
     <h1>Purple Couriers</h1>
     <div class="navbar-links">
-      <a href="/customer.html">Track Package</a>
-      <a href="/staff.html">Staff View</a>
+      <a href="/index.html">Home</a>
+      <a href="/staff-login.html">Staff Portal</a>
     </div>
   </nav>
 
   <div class="container">
-    <div class="dashboard-header" style="text-align: center; margin-bottom: 3rem;">
-      <h2>Track Your Package</h2>
-      <p>Enter your Purple Couriers Package ID or your Store Tracking Number.</p>
-      
-      <form id="track-form" style="max-width: 500px; margin: 1.5rem auto; display: flex; gap: 0.5rem;">
-        <input type="text" id="trackQuery" placeholder="e.g. PC-0045821 or 1Z123456" required style="flex: 1; padding: 1rem; font-size: 1.1rem; border-radius: 99px;">
-        <button type="submit" class="btn" style="padding: 1rem 2rem; font-size: 1.1rem;">Search</button>
-      </form>
+
+    <div class="dashboard-header" style="text-align:center; margin-bottom: 2rem;">
+      <h2>Package Centre</h2>
+      <p>Track an existing package or submit a new receipt.</p>
     </div>
 
-    <!-- Search Result Area -->
-    <div id="search-result" style="max-width: 600px; margin: 0 auto; min-height: 150px;">
-      <!-- Results inject here -->
+    <!-- TAB BAR -->
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('track')">🔍 Track My Package</button>
+      <button class="tab-btn" onclick="switchTab('submit')">📤 Submit a Receipt</button>
     </div>
 
-    <hr style="margin: 4rem 0; border: none; border-top: 1px solid var(--border-color);">
+    <!-- TRACK PANEL -->
+    <div class="tab-panel active" id="panel-track">
+      <div class="track-wrap">
+        <form class="track-search" id="track-form">
+          <input type="text" id="trackQuery" placeholder="Package ID (PC-00XXXXX) or Tracking Number" autocomplete="off" required>
+          <button type="submit" class="btn">Search →</button>
+        </form>
+        <div id="search-result"></div>
+      </div>
+    </div>
 
-    <!-- Submit Receipt Form -->
-    <div class="card receipt-card" style="max-width: 600px; margin: 0 auto;">
-      <h3 style="margin-bottom: 0.5rem;">Submit New Receipt</h3>
-      <p style="margin-bottom: 1.5rem; font-size: 0.95rem; color: var(--text-muted);">
-        Did you just buy something? Upload your receipt so Customs and our couriers can process it quickly. Max size: 5MB.
-      </p>
-      
-      <form id="add-package-form" style="display: flex; flex-direction: column; gap: 1rem;">
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-          <input type="text" id="firstName" name="firstName" placeholder="First Name" required style="flex: 1; min-width: 140px;">
-          <input type="text" id="lastName" name="lastName" placeholder="Last Name" required style="flex: 1; min-width: 140px;">
+    <!-- SUBMIT PANEL -->
+    <div class="tab-panel" id="panel-submit">
+      <div class="submit-wrap">
+
+        <!-- Success Message (hidden by default) -->
+        <div class="success-box" id="success-box">
+          <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🎉</div>
+          <h3>Receipt Submitted!</h3>
+          <p>Your package(s) have been logged. Save your Package ID(s) below to track your order:</p>
+          <div id="success-ids"></div>
+          <p style="font-size:0.9rem; margin-top:1rem;">Switch to the <strong>Track My Package</strong> tab and enter your ID anytime to check your status.</p>
+          <button class="btn" style="margin-top:1.5rem;" onclick="resetForm()">+ Submit Another Receipt</button>
         </div>
-        <input type="text" id="storeName" name="store" placeholder="Online Store (e.g. Amazon)" required>
-        <input type="text" id="orderNum" name="order" placeholder="Order Number (Required for Amazon)">
-        
-        <div id="tracking-container" style="display: flex; flex-direction: column; gap: 0.5rem;">
-          <input type="text" class="tracking-input" placeholder="Store Tracking Number" required>
-        </div>
-        <button type="button" id="add-tracking-btn" style="background: none; border: none; color: var(--primary); font-weight: 600; cursor: pointer; text-align: left; padding: 0.5rem 0; font-size: 0.9rem;">+ Add another tracking number</button>
-        
-        <div style="background: white; padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color);">
-          <label style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem;">Upload Receipt Image (Optional)</label>
-          <input type="file" id="receiptImage" name="receiptImage" accept="image/*" style="border: none; background: transparent; padding: 0;">
-          
-          <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.5rem;">
-            <input type="checkbox" id="viaWhatsapp" style="min-width: auto; width: 1.2rem; height: 1.2rem; cursor: pointer;">
-            <label for="viaWhatsapp" style="font-size: 0.9rem; cursor: pointer; color: var(--text-main);">I already sent my receipt via WhatsApp</label>
+
+        <div id="form-wrapper">
+          <div class="card receipt-card">
+            <h3 style="margin-bottom:0.3rem;">Submit New Receipt</h3>
+            <p style="margin-bottom:1.5rem; font-size:0.9rem; color:var(--text-muted);">
+              Upload your receipt so Customs and our team can process your package. Max image size: 5MB.
+            </p>
+
+            <form id="add-package-form" style="display:flex; flex-direction:column; gap:1rem;">
+              <!-- Name -->
+              <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+                <input type="text" id="firstName" placeholder="First Name" required style="flex:1; min-width:140px;">
+                <input type="text" id="lastName" placeholder="Last Name" required style="flex:1; min-width:140px;">
+              </div>
+
+              <!-- Store & Order -->
+              <input type="text" id="storeName" placeholder="Online Store (e.g. Amazon, Shein, eBay)" required>
+              <input type="text" id="orderNum" placeholder="Order Number (Required for Amazon)">
+
+              <!-- Tracking Numbers -->
+              <div id="tracking-container" style="display:flex; flex-direction:column; gap:0.5rem;">
+                <input type="text" class="tracking-input" placeholder="Carrier Tracking Number" required>
+              </div>
+              <button type="button" id="add-tracking-btn" style="background:none; border:none; color:var(--primary); font-weight:600; cursor:pointer; text-align:left; padding:0.25rem 0; font-size:0.9rem;">+ Add another tracking number</button>
+
+              <!-- Receipt Upload -->
+              <div style="background:white; padding:1rem; border-radius:12px; border:1px solid var(--border-color);">
+                <label style="font-weight:600; font-size:0.9rem; display:block; margin-bottom:0.5rem;">Upload Receipt Image <span style="color:var(--text-muted); font-weight:400;">(Optional)</span></label>
+                <input type="file" id="receiptImage" accept="image/*,.pdf" style="border:none; background:transparent; padding:0;">
+                <div style="margin-top:1rem; padding-top:1rem; border-top:1px solid var(--border-color); display:flex; align-items:center; gap:0.5rem;">
+                  <input type="checkbox" id="viaWhatsapp" style="min-width:auto; width:1.2rem; height:1.2rem; cursor:pointer;">
+                  <label for="viaWhatsapp" style="font-size:0.9rem; cursor:pointer;">I already sent my receipt via WhatsApp</label>
+                </div>
+              </div>
+
+              <button type="submit" class="btn" id="submitBtn" style="padding:1rem;">+ Submit Receipt</button>
+            </form>
           </div>
         </div>
 
-        <button type="submit" class="btn" id="submitBtn" style="margin-top: 0.5rem; padding: 1rem;">+ Upload & Submit Receipt</button>
-      </form>
+      </div>
     </div>
   </div>
 
+  <footer>
+    Website designed by <img src="/ijm-logo.png" alt="It's JUS Marketing — The People's Choice">
+  </footer>
+
   <script>
-    // 1. Handle Tracking Search
+    // Tab switching
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('panel-' + tab).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    // Check if URL has ?tab=submit
+    if (window.location.search.includes('tab=submit')) {
+      document.querySelectorAll('.tab-btn')[1].click();
+    }
+
+    // 1. Tracking Search
     document.getElementById('track-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const query = document.getElementById('trackQuery').value.trim();
       const resultDiv = document.getElementById('search-result');
-      
-      resultDiv.innerHTML = '<p style="text-align: center; color: var(--text-muted);">Searching...</p>';
+      resultDiv.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding:1rem;">Searching...</p>';
 
       try {
         const res = await fetch(`/api/track/${encodeURIComponent(query)}`);
         if (!res.ok) throw new Error('Not found');
         const pkg = await res.json();
-        
+
         let statusColor = 'var(--primary)';
-        if(pkg.status === 'Ready for Pickup') statusColor = '#16a34a'; // Green
-        if(pkg.status === 'Pending Receipt') statusColor = '#d97706'; // Orange
+        if (pkg.status === 'Ready for Pickup' || pkg.status === 'Delivered') statusColor = '#16a34a';
+        if (pkg.status === 'Pending Receipt') statusColor = '#d97706';
+        const displayStatus = pkg.status === 'Received' ? `Received from ${pkg.store}` : pkg.status;
+
+        // Build journey timeline
+        let historyHtml = '';
+        if (pkg.history && pkg.history.length > 0) {
+          historyHtml = `
+            <div style="margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--border-color);">
+              <p style="font-weight:600; margin-bottom:1rem;">Package Journey</p>
+              <div style="position:relative; padding-left:1.5rem;">
+                ${pkg.history.map((h, i) => `
+                  <div style="position:relative; margin-bottom:1rem; ${i === pkg.history.length-1 ? '' : 'padding-bottom:1rem; border-left:2px solid #e9d5ff; margin-left:-1.5rem; padding-left:1.5rem;'}">
+                    <div style="position:absolute; left:-1.9rem; top:0.1rem; width:12px; height:12px; border-radius:50%; background:var(--primary);"></div>
+                    <p style="font-weight:600; font-size:0.9rem; color:var(--text-main);">${h.status}</p>
+                    <p style="font-size:0.8rem; color:var(--text-muted);">${new Date(h.date).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</p>
+                  </div>
+                `).join('')}
+              </div>
+            </div>`;
+        }
 
         resultDiv.innerHTML = `
-          <div class="card" style="border-left: 4px solid ${statusColor}; animation: fadeIn 0.3s ease;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-              <h3>${pkg.store} Package</h3>
-              <span class="status-badge" style="background: ${statusColor}22; color: ${statusColor};">${pkg.status === 'Received' ? `Received from ${pkg.store}` : pkg.status}</span>
+          <div class="card" style="border-left:4px solid ${statusColor};">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.5rem;">
+              <div>
+                <h3>${pkg.store} Package</h3>
+                <p style="color:var(--text-muted); font-size:0.875rem; margin-top:0.25rem;">
+                  ${pkg.order ? `Order: <strong>${pkg.order}</strong> &nbsp;|&nbsp;` : ''}
+                  Tracking: <strong>${pkg.tracking}</strong> &nbsp;|&nbsp; ID: <strong>${pkg.id}</strong>
+                </p>
+              </div>
+              <span class="status-badge" style="background:${statusColor}18; color:${statusColor};">${displayStatus}</span>
             </div>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">
-              Order: <strong>${pkg.order || 'N/A'}</strong> &nbsp;|&nbsp; Tracking: <strong>${pkg.tracking}</strong> &nbsp;|&nbsp; ID: <strong>${pkg.id}</strong>
-            </p>
-            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
-              <p><strong>Status Updated:</strong> ${pkg.receivedDate}</p>
-              <p><strong>Current Step:</strong> ${pkg.step}</p>
+            <div style="margin-top:1.25rem; padding-top:1.25rem; border-top:1px solid var(--border-color);">
+              <p><strong>Last Updated:</strong> ${pkg.receivedDate}</p>
+              <p style="margin-top:0.3rem;"><strong>Current Step:</strong> ${pkg.step}</p>
             </div>
-          </div>
-        `;
+            ${historyHtml}
+          </div>`;
       } catch (err) {
         resultDiv.innerHTML = `
-          <div class="card" style="text-align: center; background: #fef2f2; border-color: #fca5a5;">
-            <h3 style="color: #b91c1c;">Package Not Found</h3>
-            <p style="color: #991b1b; font-size: 0.95rem;">We couldn't find a package with that ID or Tracking Number. Please check and try again.</p>
-          </div>
-        `;
+          <div class="card" style="text-align:center; background:#fef2f2; border-color:#fca5a5;">
+            <h3 style="color:#b91c1c;">Package Not Found</h3>
+            <p style="color:#991b1b; font-size:0.9rem; margin-top:0.25rem;">We couldn't find a package with that ID or tracking number. Please double-check and try again.</p>
+          </div>`;
       }
     });
 
-    // 2. Dynamically require Order Number if store is Amazon
+    // 2. Amazon order number required dynamically
     document.getElementById('storeName').addEventListener('input', function() {
       const orderField = document.getElementById('orderNum');
       const isAmazon = this.value.trim().toLowerCase() === 'amazon';
       orderField.required = isAmazon;
-      orderField.placeholder = isAmazon
-        ? 'Order Number (Required for Amazon e.g. 114-1234567-890)'
-        : 'Order Number (Optional for this store)';
+      orderField.placeholder = isAmazon ? 'Order Number (Required for Amazon e.g. 114-1234567-890)' : 'Order Number (Optional for this store)';
       orderField.style.borderColor = isAmazon ? 'var(--primary)' : '';
     });
 
-    // 3. Handle Add Another Tracking Number button
+    // 3. Add tracking number row
     document.getElementById('add-tracking-btn').addEventListener('click', () => {
       const container = document.getElementById('tracking-container');
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.className = 'tracking-input';
-      input.placeholder = 'Store Tracking Number';
-      input.required = true;
-      container.appendChild(input);
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex; gap:0.5rem; align-items:center;';
+      row.innerHTML = `
+        <input type="text" class="tracking-input" placeholder="Carrier Tracking Number" required style="flex:1;">
+        <button type="button" onclick="this.parentElement.remove()" style="background:none; border:none; cursor:pointer; color:#ef4444; font-size:1.2rem; padding:0.25rem;" title="Remove">✕</button>
+      `;
+      container.appendChild(row);
     });
 
-    // 4. Handle Receipt Upload
+    // 4. Submit form
     document.getElementById('add-package-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('submitBtn');
-      btn.innerText = "Uploading...";
+      btn.innerText = 'Submitting...';
       btn.disabled = true;
 
-      // Gather all tracking numbers
       const trackingInputs = document.querySelectorAll('.tracking-input');
-      const trackings = Array.from(trackingInputs).map(input => input.value.trim()).filter(val => val !== '');
+      const trackings = Array.from(trackingInputs).map(i => i.value.trim()).filter(v => v !== '');
 
       const formData = new FormData();
       formData.append('firstName', document.getElementById('firstName').value.trim());
@@ -151,40 +306,38 @@
       formData.append('order', document.getElementById('orderNum').value);
       formData.append('tracking', JSON.stringify(trackings));
       formData.append('viaWhatsapp', document.getElementById('viaWhatsapp').checked);
-      
       const fileInput = document.getElementById('receiptImage');
-      if (fileInput.files.length > 0) {
-        formData.append('receiptImage', fileInput.files[0]);
-      }
+      if (fileInput.files.length > 0) formData.append('receiptImage', fileInput.files[0]);
 
       try {
-        const res = await fetch('/api/packages', {
-          method: 'POST',
-          body: formData
-        });
-        
-        if(res.ok) {
+        const res = await fetch('/api/packages', { method: 'POST', body: formData });
+        if (res.ok) {
           const newPackages = await res.json();
-          const ids = newPackages.map(p => p.id).join(', ');
-          alert(`Success! We created ${newPackages.length} package(s). Your Package IDs are: ${ids}. You can use these or your tracking numbers to check the status above.`);
-          document.getElementById('add-package-form').reset();
-          
-          // Reset tracking container to just 1 input
-          document.getElementById('tracking-container').innerHTML = '<input type="text" class="tracking-input" placeholder="Store Tracking Number" required>';
+          // Show success box
+          document.getElementById('form-wrapper').style.display = 'none';
+          const successBox = document.getElementById('success-box');
+          successBox.style.display = 'block';
+          document.getElementById('success-ids').innerHTML = newPackages.map(p =>
+            `<div class="id-chip">${p.id}</div>`
+          ).join('');
         } else {
-          alert('Error uploading receipt. Ensure it is an image under 5MB.');
+          alert('Error submitting receipt. If uploading an image, make sure it is under 5MB.');
         }
       } catch (err) {
-        alert('Upload failed. Please try again.');
+        alert('Submission failed. Please try again.');
       }
-      
-      btn.innerText = "+ Upload & Submit Receipt";
+
+      btn.innerText = '+ Submit Receipt';
       btn.disabled = false;
     });
+
+    // Reset form
+    function resetForm() {
+      document.getElementById('success-box').style.display = 'none';
+      document.getElementById('form-wrapper').style.display = 'block';
+      document.getElementById('add-package-form').reset();
+      document.getElementById('tracking-container').innerHTML = '<input type="text" class="tracking-input" placeholder="Carrier Tracking Number" required>';
+    }
   </script>
-  
-  <style>
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-  </style>
 </body>
 </html>

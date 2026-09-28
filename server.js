@@ -54,6 +54,7 @@ const packageSchema = new mongoose.Schema({
   step: { type: String, default: 'Waiting for courier confirmation' },
   receiptUrl: { type: String, default: null },
   viaWhatsapp: { type: Boolean, default: false },
+  history: [{ status: String, date: { type: Date, default: Date.now } }],
   createdAt: { type: Date, default: Date.now },
 });
 
@@ -123,6 +124,7 @@ app.post('/api/packages', upload.single('receiptImage'), async (req, res) => {
         step: 'Waiting for courier confirmation',
         receiptUrl: req.file ? req.file.path : null,
         viaWhatsapp: req.body.viaWhatsapp === 'true',
+        history: [{ status: 'Receipt Submitted by Customer', date: new Date() }],
       });
       await newPackage.save();
       createdPackages.push(newPackage);
@@ -154,6 +156,8 @@ app.put('/api/packages/:id/status', async (req, res) => {
 
     pkg.status = status;
     if (stepMap[status]) pkg.step = stepMap[status](pkg.store);
+    // Push to history timeline
+    pkg.history.push({ status: status === 'Received' ? `Received from ${pkg.store}` : status, date: new Date() });
     if (status === 'Received' && pkg.receivedDate === 'Awaiting Dropoff') {
       const today = new Date();
       pkg.receivedDate = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
