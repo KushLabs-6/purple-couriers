@@ -3,8 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Staff Dashboard - Purple Couriers</title>
+  <title>Staff Dashboard — Purple Couriers</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    footer { background: #0f172a; color: #64748b; text-align: center; padding: 1.5rem; font-size: 0.82rem; margin-top: 3rem; }
+    footer img { height: 28px; vertical-align: middle; margin-left: 0.5rem; opacity: 0.7; }
+  </style>
 </head>
 <body>
   <nav class="navbar">
@@ -131,8 +135,18 @@
       loadStaffPackages(); // Reload table
     }
 
+    // Auth check — redirect to login if not authenticated
+    if (sessionStorage.getItem('pc_staff_auth') !== 'true') {
+      window.location.href = '/staff-login.html';
+    }
+
     // Run on startup
     loadStaffPackages();
   </script>
+
+  <footer>
+    Website designed by <img src="/ijm-logo.png" alt="It's JUS Marketing — The People's Choice">
+  </footer>
+
 </body>
 </html>

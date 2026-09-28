@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Purple Couriers — Track Every Step of the Way</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: var(--bg-color); }
+
+    .hero {
+      background: var(--primary-gradient);
+      min-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 3rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 50%;
+      top: -150px; right: -150px;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 50%;
+      bottom: -100px; left: -100px;
+    }
+    .hero-badge {
+      background: rgba(255,255,255,0.15);
+      color: white;
+      padding: 0.4rem 1.2rem;
+      border-radius: 99px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      margin-bottom: 1.5rem;
+      display: inline-block;
+      position: relative;
+      z-index: 2;
+    }
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 800;
+      color: white;
+      letter-spacing: -1px;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+      position: relative;
+      z-index: 2;
+    }
+    .hero h1 span { color: #e9d5ff; }
+    .hero > p {
+      font-size: 1.15rem;
+      color: rgba(255,255,255,0.8);
+      max-width: 540px;
+      margin-bottom: 2.5rem;
+      line-height: 1.7;
+      position: relative;
+      z-index: 2;
+    }
+    .hero-search {
+      display: flex;
+      gap: 0;
+      max-width: 580px;
+      width: 100%;
+      margin-bottom: 1rem;
+      background: white;
+      border-radius: 99px;
+      padding: 0.5rem 0.5rem 0.5rem 1.5rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      position: relative;
+      z-index: 2;
+    }
+    .hero-search input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      background: transparent;
+      min-width: 0;
+      padding: 0.5rem 0;
+      color: var(--text-main);
+    }
+    .hero-search input::placeholder { color: var(--text-muted); }
+    .hero-search button {
+      background: var(--primary-gradient);
+      color: white;
+      border: none;
+      padding: 0.85rem 2rem;
+      border-radius: 99px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: 1rem;
+      transition: opacity 0.2s;
+    }
+    .hero-search button:hover { opacity: 0.9; }
+    .hero-hint {
+      color: rgba(255,255,255,0.55);
+      font-size: 0.85rem;
+      margin-bottom: 2rem;
+      position: relative; z-index: 2;
+    }
+    #hero-result {
+      max-width: 580px;
+      width: 100%;
+      position: relative;
+      z-index: 2;
+      margin-bottom: 1.5rem;
+    }
+    .result-card {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      text-align: left;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      animation: fadeUp 0.3s ease;
+    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      position: relative; z-index: 2;
+    }
+    .btn-white {
+      background: white;
+      color: var(--primary);
+      border: none;
+      padding: 0.9rem 2rem;
+      border-radius: 99px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: all 0.2s;
+      display: inline-block;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    .btn-white:hover { transform: translateY(-2px); }
+    .btn-outline {
+      background: rgba(255,255,255,0.1);
+      color: white;
+      border: 2px solid rgba(255,255,255,0.4);
+      padding: 0.9rem 2rem;
+      border-radius: 99px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: all 0.2s;
+      display: inline-block;
+    }
+    .btn-outline:hover { background: rgba(255,255,255,0.2); }
+
+    /* Steps */
+    .steps-section { padding: 5rem 1.5rem; max-width: 1100px; margin: 0 auto; }
+    .section-title { text-align: center; font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: -0.5px; }
+    .section-sub { text-align: center; color: var(--text-muted); margin-bottom: 3rem; font-size: 1.05rem; }
+    .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
+    .step-card {
+      text-align: center; padding: 2rem 1.5rem;
+      background: white; border-radius: 16px;
+      border: 1px solid var(--border-color);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .step-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(126,34,206,0.1); }
+    .step-icon { font-size: 2.5rem; margin-bottom: 0.75rem; display: block; }
+    .step-num {
+      background: var(--primary-gradient);
+      color: white; width: 28px; height: 28px;
+      border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 700; margin-bottom: 0.75rem;
+    }
+    .step-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem; }
+    .step-card p { font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* CTA */
+    .cta-section { background: var(--primary-gradient); padding: 4rem 1.5rem; text-align: center; }
+    .cta-section h2 { color: white; font-size: 2rem; font-weight: 700; margin-bottom: 1rem; }
+    .cta-section p { color: rgba(255,255,255,0.8); margin-bottom: 2rem; font-size: 1.05rem; }
+
+    /* Footer */
+    footer { background: #0f172a; color: #94a3b8; padding: 2.5rem 1.5rem; text-align: center; }
+    .footer-brand { font-size: 1.3rem; font-weight: 700; color: white; margin-bottom: 0.3rem; }
+    .footer-tagline { font-size: 0.875rem; color: #64748b; margin-bottom: 2rem; }
+    .footer-links { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; margin-bottom: 2rem; }
+    .footer-links a { color: #94a3b8; text-decoration: none; font-size: 0.875rem; transition: color 0.2s; }
+    .footer-links a:hover { color: white; }
+    .footer-divider { border: none; border-top: 1px solid #1e293b; margin: 1.5rem 0; }
+    .footer-credit {
+      display: flex; align-items: center;
+      justify-content: center; gap: 0.6rem;
+      font-size: 0.82rem; color: #475569;
+    }
+    .footer-credit img { height: 32px; border-radius: 4px; opacity: 0.85; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <h1>Purple Couriers</h1>
+    <div class="navbar-links">
+      <a href="/customer.html">Track / Submit</a>
+      <a href="/staff-login.html">Staff Portal</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge">📦 Jamaica's Package Accountability System</div>
+    <h1>From Online Order<br>to <span>Your Door</span></h1>
+    <p>Shop online using your Purple Couriers address. We track every package from the moment it arrives at our facility — all the way to your hands.</p>
+
+    <form class="hero-search" id="hero-track-form">
+      <input type="text" id="heroTrackQuery" placeholder="Enter Package ID or Tracking Number..." autocomplete="off">
+      <button type="submit">Track →</button>
+    </form>
+
+    <div id="hero-result"></div>
+    <div class="hero-hint">e.g. PC-0045821 or 1Z123456789</div>
+
+    <div class="hero-actions">
+      <a href="/customer.html" class="btn-white">+ Submit a Receipt</a>
+      <a href="#how-it-works" class="btn-outline">How It Works ↓</a>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="steps-section" id="how-it-works">
+    <h2 class="section-title">How It Works</h2>
+    <p class="section-sub">Eight simple steps — tracked every single one.</p>
+    <div class="steps-grid">
+      <div class="step-card"><span class="step-icon">🛒</span><div class="step-num">1</div><h3>You Purchase Online</h3><p>Shop from Amazon, Shein, eBay, or any store using your Purple Couriers shipping address.</p></div>
+      <div class="step-card"><span class="step-icon">📤</span><div class="step-num">2</div><h3>Submit Your Receipt</h3><p>Upload your receipt or tick "Sent via WhatsApp". We log it immediately.</p></div>
+      <div class="step-card"><span class="step-icon">🏭</span><div class="step-num">3</div><h3>Package Arrives at Our Facility</h3><p>Delivered to our US address. Staff confirm and log it in the system.</p></div>
+      <div class="step-card"><span class="step-icon">🔔</span><div class="step-num">4</div><h3>You're Notified</h3><p>Status updates to <strong>Received from [Store]</strong>. No more guessing.</p></div>
+      <div class="step-card"><span class="step-icon">✈️</span><div class="step-num">5</div><h3>Shipped to Jamaica</h3><p>Package is batched and shipped. Status updates to <strong>In Transit</strong>.</p></div>
+      <div class="step-card"><span class="step-icon">🇯🇲</span><div class="step-num">6</div><h3>Arrives in Jamaica</h3><p>Clears customs. Status updates to <strong>Arrived in Jamaica</strong>.</p></div>
+      <div class="step-card"><span class="step-icon">📬</span><div class="step-num">7</div><h3>Ready for Pickup</h3><p>We let you know your package is ready to collect.</p></div>
+      <div class="step-card"><span class="step-icon">🎉</span><div class="step-num">8</div><h3>Delivered to You</h3><p>Status updates to <strong>Delivered</strong>. Package journey complete.</p></div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <h2>Ready to Submit a Package?</h2>
+    <p>Upload your receipt now and we'll track it from here to your door.</p>
+    <a href="/customer.html" class="btn-white">Get Started — It's Free</a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-brand">📦 Purple Couriers</div>
+    <div class="footer-tagline">From Online Order to Your Door — Tracked Every Step of the Way.</div>
+    <div class="footer-links">
+      <a href="/index.html">Home</a>
+      <a href="/customer.html">Track Package</a>
+      <a href="/customer.html">Submit Receipt</a>
+      <a href="/staff-login.html">Staff Portal</a>
+    </div>
+    <hr class="footer-divider">
+    <div class="footer-credit">
+      <span>Website designed by</span>
+      <img src="/ijm-logo.png" alt="It's JUS Marketing — The People's Choice">
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('hero-track-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const query = document.getElementById('heroTrackQuery').value.trim();
+      const resultDiv = document.getElementById('hero-result');
+      if (!query) return;
+      resultDiv.innerHTML = '<p style="color: rgba(255,255,255,0.7); margin: 0.5rem 0 1rem;">Searching...</p>';
+      try {
+        const res = await fetch(`/api/track/${encodeURIComponent(query)}`);
+        if (!res.ok) throw new Error('Not found');
+        const pkg = await res.json();
+        let statusColor = '#7e22ce';
+        if (pkg.status === 'Ready for Pickup' || pkg.status === 'Delivered') statusColor = '#16a34a';
+        if (pkg.status === 'Pending Receipt') statusColor = '#d97706';
+        const displayStatus = pkg.status === 'Received' ? `Received from ${pkg.store}` : pkg.status;
+        resultDiv.innerHTML = `
+          <div class="result-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem;flex-wrap:wrap;gap:0.5rem;">
+              <div>
+                <h3 style="font-size:1.1rem;font-weight:700;color:#0f172a;">${pkg.store} Package</h3>
+                <p style="font-size:0.85rem;color:#64748b;">ID: ${pkg.id} &nbsp;|&nbsp; Tracking: ${pkg.tracking}</p>
+              </div>
+              <span style="background:${statusColor}18;color:${statusColor};padding:0.3rem 0.8rem;border-radius:99px;font-size:0.8rem;font-weight:700;">${displayStatus}</span>
+            </div>
+            <div style="border-top:1px solid #e2e8f0;padding-top:0.75rem;font-size:0.9rem;color:#374151;">
+              <p><strong>Date:</strong> ${pkg.receivedDate}</p>
+              <p style="margin-top:0.25rem;"><strong>Next Step:</strong> ${pkg.step}</p>
+            </div>
+          </div>`;
+      } catch (err) {
+        resultDiv.innerHTML = `
+          <div class="result-card" style="text-align:center;">
+            <p style="color:#b91c1c;font-weight:600;">Package not found.</p>
+            <p style="color:#6b7280;font-size:0.9rem;margin-top:0.25rem;">Check your ID or tracking number and try again.</p>
+          </div>`;
+      }
+    });
+  </script>
+</body>
+</html>

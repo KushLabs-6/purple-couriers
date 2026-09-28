@@ -175,9 +175,20 @@ app.delete('/api/packages/:id', async (req, res) => {
   }
 });
 
-// Serve customer page
+// 6. Staff Login
+app.post('/api/staff/login', (req, res) => {
+  const { password } = req.body;
+  const staffPassword = process.env.STAFF_PASSWORD || 'purple2026';
+  if (password === staffPassword) {
+    res.json({ success: true });
+  } else {
+    res.status(401).json({ error: 'Incorrect password' });
+  }
+});
+
+// Serve homepage as root
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'customer.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.listen(port, () => {
