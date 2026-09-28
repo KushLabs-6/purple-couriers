@@ -18,11 +18,21 @@
   font-family: 'Inter', sans-serif;
 }
 
+html { height: 100%; }
+
 body {
   background-color: var(--bg-color);
   color: var(--text-main);
   -webkit-font-smoothing: antialiased;
   line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Main content grows to push footer down */
+.container, .login-wrapper {
+  flex: 1;
 }
 
 /* Navbar */

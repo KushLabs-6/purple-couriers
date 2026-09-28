@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Purple Couriers — Track & Submit</title>
+  <meta name="theme-color" content="#7e22ce">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="style.css">
   <style>
     /* Tab switcher */
@@ -337,6 +340,12 @@
       document.getElementById('form-wrapper').style.display = 'block';
       document.getElementById('add-package-form').reset();
       document.getElementById('tracking-container').innerHTML = '<input type="text" class="tracking-input" placeholder="Carrier Tracking Number" required>';
+    }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js');
+      });
     }
   </script>
 </body>
