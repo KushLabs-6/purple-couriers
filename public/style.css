@@ -297,3 +297,50 @@ tr:hover td {
   background: linear-gradient(to right bottom, #ffffff, #fbf7ff);
   border: 2px dashed #d8b4fe;
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+    text-align: center;
+  }
+  .navbar-links {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .navbar-links a {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+  .dashboard-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  /* Make table scroll horizontally smoothly on mobile */
+  .table-container {
+    margin: 0 -1rem; /* allow bleeding to edges */
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  table {
+    min-width: 800px; /* Force scroll */
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

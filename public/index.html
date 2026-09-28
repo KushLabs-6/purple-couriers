@@ -297,7 +297,7 @@
         const pkg = await res.json();
         let statusColor = '#7e22ce';
         if (pkg.status === 'Ready for Pickup' || pkg.status === 'Delivered') statusColor = '#16a34a';
-        if (pkg.status === 'Pending Receipt') statusColor = '#d97706';
+        if (pkg.status === 'Pending Receipt' || pkg.status === 'Pending') statusColor = '#d97706';
         const displayStatus = pkg.status === 'Received' ? `Received from ${pkg.store}` : pkg.status;
         resultDiv.innerHTML = `
           <div class="result-card">

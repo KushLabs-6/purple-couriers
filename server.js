@@ -49,12 +49,13 @@ const packageSchema = new mongoose.Schema({
   store: String,
   order: String,
   tracking: String,
-  status: { type: String, default: 'Pending Receipt' },
+  status: { type: String, default: 'Pending' },
   receivedDate: { type: String, default: 'Awaiting Dropoff' },
   step: { type: String, default: 'Waiting for courier confirmation' },
   receiptUrl: { type: String, default: null },
   viaWhatsapp: { type: Boolean, default: false },
   history: [{ status: String, date: { type: Date, default: Date.now } }],
+  staffNote: { type: String, default: '' },
   createdAt: { type: Date, default: Date.now },
 });
 
@@ -119,7 +120,7 @@ app.post('/api/packages', upload.single('receiptImage'), async (req, res) => {
         store: req.body.store,
         order: req.body.order || '',
         tracking: trackNum,
-        status: 'Pending Receipt',
+        status: 'Pending',
         receivedDate: 'Awaiting Dropoff',
         step: 'Waiting for courier confirmation',
         receiptUrl: req.file ? req.file.path : null,
@@ -142,6 +143,8 @@ app.put('/api/packages/:id/status', async (req, res) => {
   const { status } = req.body;
 
   const stepMap = {
+    'Pending':            () => 'Waiting for courier confirmation',
+    'Pending Receipt':    () => 'Waiting for receipt submission',
     'Received':           (store) => `Received from ${store}. Preparing for shipment.`,
     'Shipping':           () => 'Leaving facility',
     'In Transit':         () => 'Arriving in Jamaica soon',
@@ -169,7 +172,20 @@ app.put('/api/packages/:id/status', async (req, res) => {
   }
 });
 
-// 5. DELETE a package (Staff)
+// 5. Update staff note
+app.put('/api/packages/:id/note', async (req, res) => {
+  try {
+    const pkg = await Package.findOne({ id: req.params.id });
+    if (!pkg) return res.status(404).json({ error: 'Package not found' });
+    pkg.staffNote = req.body.staffNote || '';
+    await pkg.save();
+    res.json(pkg);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update note' });
+  }
+});
+
+// 6. DELETE a package (Staff)
 app.delete('/api/packages/:id', async (req, res) => {
   try {
     await Package.deleteOne({ id: req.params.id });
