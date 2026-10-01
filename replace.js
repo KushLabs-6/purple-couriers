@@ -24,9 +24,9 @@ files.forEach(file => {
   let content = fs.readFileSync(file, 'utf8');
   
   // Replace texts
-  content = content.replace(/Purple Couriers/g, 'It's Just Marketing and Shipping');
-  content = content.replace(/purple-couriers/g, 'its-just-marketing-and-shipping');
-  content = content.replace(/PurpleCouriers/g, 'ItsJustMarketingAndShipping');
+  content = content.replace(/Purple Couriers/g, 'It's Jus Marketing and Shipping');
+  content = content.replace(/purple-couriers/g, 'its-jus-marketing-and-shipping');
+  content = content.replace(/PurpleCouriers/g, 'ItsJusMarketingAndShipping');
   
   // Replace colors in style.css and index.html
   content = content.replace(/#7e22ce/gi, '#009b3a'); // Green

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'its-just-marketing-and-shipping-v2';
+const CACHE_NAME = 'its-jus-marketing-and-shipping-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',

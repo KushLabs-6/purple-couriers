@@ -20,25 +20,20 @@ const walkSync = (dir, filelist = []) => {
 const files = walkSync(path.join(__dirname));
 
 files.forEach(file => {
-  if (file === __filename) return;
+  if (file === __filename || file.endsWith('.png') || file.endsWith('.jpg')) return;
   let content = fs.readFileSync(file, 'utf8');
   
   // Replace texts
-  content = content.replace(/JUS Marketing Shipping/g, "It's Jus Marketing and Shipping");
-  content = content.replace(/jus-marketing-shipping/g, 'its-jus-marketing-and-shipping');
-  content = content.replace(/JUSMarketingShipping/g, 'ItsJusMarketingAndShipping');
-  
-  // Specifically for the navbar to avoid breaking layout maybe use 'It's Just Marketing & Shipping' or just string
+  content = content.replace(/It's Just Marketing and Shipping/g, "It's Jus Marketing and Shipping");
+  content = content.replace(/its-just-marketing-and-shipping/g, 'its-jus-marketing-and-shipping');
+  content = content.replace(/ItsJustMarketingAndShipping/g, 'ItsJusMarketingAndShipping');
   
   // Update sw.js cache name just in case to force reload
   if (file.endsWith('sw.js')) {
-    content = content.replace(/its-jus-marketing-and-shipping-v1/g, 'its-jus-marketing-and-shipping-v2');
-    content = content.replace(/jus-marketing-shipping-v\d+/g, 'its-jus-marketing-and-shipping-v2');
+    content = content.replace(/its-just-marketing-and-shipping-v2/g, 'its-jus-marketing-and-shipping-v3');
   }
 
-  // Double check colors, in case they weren't saved correctly.
-  
   fs.writeFileSync(file, content, 'utf8');
 });
 
-console.log('Done renaming!');
+console.log('Done fixing spelling!');

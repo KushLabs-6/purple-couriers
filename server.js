@@ -28,7 +28,7 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: 'its-just-marketing-and-shipping/receipts',
+    folder: 'its-jus-marketing-and-shipping/receipts',
     allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf'],
     transformation: [{ quality: 'auto', fetch_format: 'auto' }],
   },
@@ -66,7 +66,7 @@ const Package = mongoose.model('Package', packageSchema);
 // app.use(basicAuth({
 //   users: { 'admin': 'admin2026' },
 //   challenge: true,
-//   realm: 'It's Just Marketing and Shipping'
+//   realm: 'It's Jus Marketing and Shipping'
 // }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -218,5 +218,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`It's Just Marketing and Shipping app listening on port ${port}`);
+  console.log(`It's Jus Marketing and Shipping app listening on port ${port}`);
 });
