@@ -213,6 +213,15 @@
     }
 
     // Check if URL has ?tab=submit
+    
+    // Check if URL has ?track=PC-XXXX
+    const urlParams = new URLSearchParams(window.location.search);
+    const trackParam = urlParams.get('track');
+    if (trackParam) {
+      document.getElementById('trackQuery').value = trackParam;
+      document.getElementById('track-form').dispatchEvent(new Event('submit'));
+    }
+
     if (window.location.search.includes('tab=submit')) {
       document.querySelectorAll('.tab-btn')[1].click();
     }

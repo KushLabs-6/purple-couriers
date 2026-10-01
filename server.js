@@ -200,6 +200,33 @@ app.put('/api/packages/:id/note', async (req, res) => {
 });
 
 // 6. DELETE a package (Staff)
+
+// 5. Delete a history process step
+app.delete('/api/packages/:id/history/:index', async (req, res) => {
+  try {
+    const pkg = await Package.findOne({ id: req.params.id });
+    if (!pkg) return res.status(404).send('Not found');
+    
+    const index = parseInt(req.params.index);
+    if (index >= 0 && index < pkg.history.length) {
+      pkg.history.splice(index, 1);
+      
+      if (pkg.history.length > 0) {
+        let lastStatus = pkg.history[pkg.history.length - 1].status;
+        if (lastStatus.includes('Received from')) lastStatus = 'Received';
+        if (lastStatus === 'Receipt Submitted by Customer') lastStatus = 'Pending';
+        pkg.status = lastStatus;
+      } else {
+        pkg.status = 'Pending';
+      }
+      await pkg.save();
+    }
+    res.json(pkg);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete history' });
+  }
+});
+
 app.delete('/api/packages/:id', async (req, res) => {
   try {
     await Package.deleteOne({ id: req.params.id });
