@@ -1,4 +1,4 @@
-const CACHE_NAME = 'purple-couriers-v1';
+const CACHE_NAME = 'its-just-marketing-and-shipping-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',

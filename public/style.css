@@ -1,12 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --primary: #7e22ce; /* Vibrant Purple */
-  --primary-dark: #581c87;
-  --primary-gradient: linear-gradient(135deg, #9333ea 0%, #6b21a8 100%);
+  --primary: #009b3a; /* Vibrant Purple */
+  --primary-dark: #007a2e;
+  --primary-gradient: linear-gradient(135deg, #009b3a 0%, #fed100 100%);
   --bg-color: #f8fafc;
   --card-bg: #ffffff;
-  --text-main: #0f172a;
+  --text-main: #000000;
   --text-muted: #64748b;
   --border-color: #e2e8f0;
 }
@@ -42,7 +42,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 4px 20px rgba(107, 33, 168, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 122, 46, 0.15);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -132,7 +132,7 @@ body {
   align-items: center;
   font-weight: 600;
   margin: 1rem 0;
-  background: #f3e8ff;
+  background: #e6f5ea;
   color: var(--primary);
   padding: 0.4rem 1rem;
   border-radius: 99px;
@@ -141,7 +141,7 @@ body {
 
 /* Status Badge (Staff Table) */
 .status-badge {
-  background: #f3e8ff;
+  background: #e6f5ea;
   color: var(--primary-dark);
   padding: 0.35rem 0.8rem;
   border-radius: 9999px;
@@ -163,7 +163,7 @@ body {
   font-weight: 600;
   font-size: 0.95rem;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 10px rgba(126, 34, 206, 0.25);
+  box-shadow: 0 4px 10px rgba(0, 155, 58, 0.25);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -171,7 +171,7 @@ body {
 }
 
 .btn:hover {
-  box-shadow: 0 6px 15px rgba(126, 34, 206, 0.4);
+  box-shadow: 0 6px 15px rgba(0, 155, 58, 0.4);
   transform: translateY(-1px);
 }
 

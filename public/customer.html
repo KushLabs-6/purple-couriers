@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Purple Couriers — Track & Submit</title>
-  <meta name="theme-color" content="#7e22ce">
+  <title>It's Just Marketing and Shipping — Track & Submit</title>
+  <meta name="theme-color" content="#009b3a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="style.css">
@@ -37,7 +37,7 @@
     .tab-btn.active {
       background: var(--primary-gradient);
       color: white;
-      box-shadow: 0 4px 12px rgba(126,34,206,0.3);
+      box-shadow: 0 4px 12px rgba(0,155,58,0.3);
     }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
@@ -97,13 +97,13 @@
     }
 
     /* Footer */
-    footer { background: #0f172a; color: #64748b; text-align: center; padding: 1.5rem; font-size: 0.82rem; margin-top: 3rem; }
+    footer { background: #000000; color: #64748b; text-align: center; padding: 1.5rem; font-size: 0.82rem; margin-top: 3rem; }
     footer img { height: 28px; vertical-align: middle; margin-left: 0.5rem; opacity: 0.7; }
   </style>
 </head>
 <body>
   <nav class="navbar">
-    <h1>Purple Couriers</h1>
+    <h1>It's Just Marketing and Shipping</h1>
     <div class="navbar-links">
       <a href="/index.html">Home</a>
       <a href="/staff-login.html">Staff Portal</a>
@@ -237,7 +237,7 @@
               <p style="font-weight:600; margin-bottom:1rem;">Package Journey</p>
               <div style="position:relative; padding-left:1.5rem;">
                 ${pkg.history.map((h, i) => `
-                  <div style="position:relative; margin-bottom:1rem; ${i === pkg.history.length-1 ? '' : 'padding-bottom:1rem; border-left:2px solid #e9d5ff; margin-left:-1.5rem; padding-left:1.5rem;'}">
+                  <div style="position:relative; margin-bottom:1rem; ${i === pkg.history.length-1 ? '' : 'padding-bottom:1rem; border-left:2px solid #fed100; margin-left:-1.5rem; padding-left:1.5rem;'}">
                     <div style="position:absolute; left:-1.9rem; top:0.1rem; width:12px; height:12px; border-radius:50%; background:var(--primary);"></div>
                     <p style="font-weight:600; font-size:0.9rem; color:var(--text-main);">${h.status}</p>
                     <p style="font-size:0.8rem; color:var(--text-muted);">${new Date(h.date).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</p>

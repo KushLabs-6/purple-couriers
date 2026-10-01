@@ -1,11 +1,11 @@
 {
-  "name": "Purple Couriers",
-  "short_name": "Purple",
+  "name": "It's Just Marketing and Shipping",
+  "short_name": "JUS Marketing",
   "description": "Track your packages from purchase to your door in Jamaica.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f8fafc",
-  "theme_color": "#7e22ce",
+  "theme_color": "#009b3a",
   "orientation": "portrait-primary",
   "icons": [
     {
