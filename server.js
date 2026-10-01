@@ -107,7 +107,15 @@ app.get('/api/track/:query', async (req, res) => {
 });
 
 // 3. Add new packages (Customer submitting receipt)
-app.post('/api/packages', upload.single('receiptImage'), async (req, res) => {
+app.post('/api/packages', (req, res, next) => {
+  upload.single('receiptImage')(req, res, function (err) {
+    if (err) {
+      console.error('Upload error:', err);
+      return res.status(400).json({ error: 'Image upload failed. Check Cloudinary settings on Render.' });
+    }
+    next();
+  });
+}, async (req, res) => {
   let trackingNumbers = [];
   try {
     trackingNumbers = JSON.parse(req.body.tracking);

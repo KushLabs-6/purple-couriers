@@ -332,7 +332,7 @@
             `<div class="id-chip">${p.id}</div>`
           ).join('');
         } else {
-          alert('Error submitting receipt. If uploading an image, make sure it is under 5MB.');
+          const errData = await res.json().catch(()=>({})); alert(errData.error || 'Error submitting receipt. Please check server logs.');
         }
       } catch (err) {
         alert('Submission failed. Please try again.');
