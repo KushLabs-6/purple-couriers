@@ -111,7 +111,7 @@ app.post('/api/packages', (req, res, next) => {
   upload.single('receiptImage')(req, res, function (err) {
     if (err) {
       console.error('Upload error:', err);
-      return res.status(400).json({ error: 'Image upload failed. Check Cloudinary settings on Render.' });
+      return res.status(400).json({ error: 'Upload error: ' + (err.message || err.toString()) });
     }
     next();
   });
