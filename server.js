@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const { v2: cloudinary } = require('cloudinary');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer');
+const basicAuth = require('express-basic-auth');
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -62,6 +63,11 @@ const packageSchema = new mongoose.Schema({
 const Package = mongoose.model('Package', packageSchema);
 
 // Middleware
+app.use(basicAuth({
+  users: { 'admin': 'admin2026' },
+  challenge: true,
+  realm: 'Purple Couriers'
+}));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
