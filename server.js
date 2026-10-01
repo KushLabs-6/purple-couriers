@@ -198,7 +198,7 @@ app.delete('/api/packages/:id', async (req, res) => {
 // 6. Staff Login
 app.post('/api/staff/login', (req, res) => {
   const { password } = req.body;
-  const staffPassword = process.env.STAFF_PASSWORD || 'purple2026';
+  const staffPassword = process.env.STAFF_PASSWORD || 'admin2026';
   if (password === staffPassword) {
     res.json({ success: true });
   } else {
